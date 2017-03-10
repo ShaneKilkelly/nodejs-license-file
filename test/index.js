@@ -5,52 +5,52 @@
  *
  * @type {should|exports|module.exports}
  */
-const should = require('should');
+var should = require('should');
 
 /**
  * Core fs module
  *
  * @type {exports|module.exports}
  */
-const fs = require('fs');
+var fs = require('fs');
 
 /**
  * LicenseFile module
  *
  * @type {Generator|exports|module.exports}
  */
-const licenseFile = require('../index');
+var licenseFile = require('../index');
 
 /**
- * Some constants
+ * Some varants
  */
-const LICENSE_VERSION     = '1';
-const APPLICATION_VERSION = '1.0.0';
-const FIRST_NAME          = 'First Name';
-const LAST_NAME           = 'Last Name';
-const EMAIL               = 'some@email.com';
-const EXPIRATION_DATE     = '2025/09/25';
+var LICENSE_VERSION     = '1';
+var APPLICATION_VERSION = '1.0.0';
+var FIRST_NAME          = 'First Name';
+var LAST_NAME           = 'Last Name';
+var EMAIL               = 'some@email.com';
+var EXPIRATION_DATE     = '2025/09/25';
 
-describe('Generate license file', () => {
+describe('Generate license file', function() {
 
-    it('with default template', done => {
+  it('with default template', function(done) {
         licenseFile.generate({
             privateKeyPath: 'test/keys/key.pem',
             data: 'data string'
-        }, (err, fileData) => {
+        }, function(err, fileData) {
             should.equal(err, null);
 
             fileData.should.match(/^====BEGIN LICENSE====\ndata string\n(.*)\n=====END LICENSE=====$/);
 
             fs.writeFileSync('test/1.lic', fileData, 'utf8');
 
-            done()
+          done();
         });
     });
 
-    it('with custom template', done => {
+    it('with custom template',function(done) {
 
-        let template = [
+        var template = [
             '====BEGIN LICENSE====',
             '{{&licenseVersion}}',
             '{{&applicationVersion}}',
@@ -73,10 +73,10 @@ describe('Generate license file', () => {
                 email: EMAIL,
                 expirationDate: EXPIRATION_DATE
             }
-        }, (err, fileData) => {
+        },function(err, fileData)  {
             should.equal(err, null);
 
-            let regExp = new RegExp('^====BEGIN LICENSE====\\n' +
+            var regExp = new RegExp('^====BEGIN LICENSE====\\n' +
                 LICENSE_VERSION + '\\n' +
                 APPLICATION_VERSION + '\\n' +
                 FIRST_NAME + '\\n' +
@@ -93,13 +93,13 @@ describe('Generate license file', () => {
     });
 });
 
-describe('Parse license files', () => {
+describe('Parse license files',function()  {
 
-    it('with default template', done => {
+    it('with default template',function(done) {
         licenseFile.parse({
             publicKeyPath: 'test/keys/key.pub',
             fileData: fs.readFileSync('test/1.lic', 'utf8')
-        }, (err, data) => {
+        },function(err, data)  {
             should.equal(err, null);
 
             data.valid.should.be.ok();
@@ -109,14 +109,14 @@ describe('Parse license files', () => {
         });
     });
 
-    it('with default template (bad license file)', done => {
+    it('with default template (bad license file)',function(done) {
 
         var fileData = fs.readFileSync('test/1.lic', 'utf8').replace(/data string/g, 'another one data string');
 
         licenseFile.parse({
             publicKeyPath: 'test/keys/key.pub',
             fileData: fileData
-        }, (err, data) => {
+        },function(err, data)  {
             should.equal(err, null);
 
             data.valid.should.not.be.ok();
@@ -125,24 +125,24 @@ describe('Parse license files', () => {
         });
     });
 
-    it('with custom template', done => {
+    it('with custom template',function(done) {
         licenseFile.parse({
             publicKeyPath: 'test/keys/key.pub',
             fileData: fs.readFileSync('test/2.lic', 'utf8'),
-            fileParseFnc: (fileData, callback) => {
-                let dataLines = fileData.split('\n');
+            fileParseFnc:function(fileData, callback)  {
+                var dataLines = fileData.split('\n');
 
                 if (dataLines.length != 9) {
                     return callback(new Error('LicenseFile::fileParseFnc: License file must have 5 lines, actual: ' + dataLines.length));
                 }
 
-                let licenseVersion     = dataLines[1];
-                let applicationVersion = dataLines[2];
-                let firstName          = dataLines[3];
-                let lastName           = dataLines[4];
-                let email              = dataLines[5];
-                let expirationDate     = dataLines[6];
-                let serial             = dataLines[7];
+                var licenseVersion     = dataLines[1];
+                var applicationVersion = dataLines[2];
+                var firstName          = dataLines[3];
+                var lastName           = dataLines[4];
+                var email              = dataLines[5];
+                var expirationDate     = dataLines[6];
+                var serial             = dataLines[7];
 
                 callback(null, {
                     serial: serial, data: {
@@ -155,7 +155,7 @@ describe('Parse license files', () => {
                     }
                 });
             }
-        }, (err, data) => {
+        },function(err, data)  {
             should.equal(err, null);
 
             data.valid.should.be.ok();
@@ -170,27 +170,27 @@ describe('Parse license files', () => {
         });
     });
 
-    it('with custom template (bad license file)', done => {
+    it('with custom template (bad license file)',function(done) {
 
         var fileData = fs.readFileSync('test/2.lic', 'utf8').replace(/2025\/09\/25/g, '2045/09/25');
 
         licenseFile.parse({
             publicKeyPath: 'test/keys/key.pub',
             fileData: fileData,
-            fileParseFnc: (fileData, callback) => {
-                let dataLines = fileData.split('\n');
+            fileParseFnc:function(fileData, callback)  {
+                var dataLines = fileData.split('\n');
 
                 if (dataLines.length != 9) {
                     return callback(new Error('LicenseFile::fileParseFnc: License file must have 5 lines, actual: ' + dataLines.length));
                 }
 
-                let licenseVersion     = dataLines[1];
-                let applicationVersion = dataLines[2];
-                let firstName          = dataLines[3];
-                let lastName           = dataLines[4];
-                let email              = dataLines[5];
-                let expirationDate     = dataLines[6];
-                let serial             = dataLines[7];
+                var licenseVersion     = dataLines[1];
+                var applicationVersion = dataLines[2];
+                var firstName          = dataLines[3];
+                var lastName           = dataLines[4];
+                var email              = dataLines[5];
+                var expirationDate     = dataLines[6];
+                var serial             = dataLines[7];
 
                 callback(null, {
                     serial: serial, data: {
@@ -203,7 +203,7 @@ describe('Parse license files', () => {
                     }
                 });
             }
-        }, (err, data) => {
+        },function(err, data)  {
             should.equal(err, null);
 
             data.valid.should.not.be.ok();
@@ -213,8 +213,8 @@ describe('Parse license files', () => {
     });
 });
 
-describe('Clean', () => {
-    it('license files', done => {
+describe('Clean',function()  {
+    it('license files',function(done) {
         fs.unlinkSync('test/1.lic');
         fs.unlinkSync('test/2.lic');
         done();
